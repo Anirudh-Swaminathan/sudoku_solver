@@ -15,8 +15,8 @@ def findCorners(img):
 
 	return [polygon[top_left][0], polygon[top_right][0], polygon[bottom_right][0], polygon[bottom_left][0]]
 
-def displayRects(in_img, rects, colour=255):
-	img = in_img.copy()
+def displayRects(inImg, rects, colour=255):
+	img = inImg.copy()
 	for rect in rects:
 		img = cv2.rectangle(img, tuple(int(x) for x in rect[0]), tuple(int(x) for x in rect[1]), colour)
 	showImage(img)
@@ -76,7 +76,14 @@ if not skip_dilate:
 corners = findCorners(proc)
 cropped = crop(original, corners)
 squares = gridDetect(cropped)
+print(squares)
 displayRects(cropped, squares)
 
+croppedImages = []
 
+for x in range(0,81):
+	croppedImages.append(cropped[int(squares[x][0][0]):int(squares[x][1][0]), int(squares[x][0][1]):int(squares[x][1][1])])
 
+#croppedImages contains the 81 extracted images for use in MNIST!
+#example
+showImage(croppedImages[6])
