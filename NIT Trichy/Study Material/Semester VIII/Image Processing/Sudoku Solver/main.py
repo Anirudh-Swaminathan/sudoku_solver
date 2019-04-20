@@ -61,7 +61,7 @@ def gridDetect(img):
 
 def showImage(img):
     cv2.imshow('Grids', img)
-    cv2.waitKey(200)
+    cv2.waitKey(2000)
     cv2.destroyAllWindows()
 
 
@@ -113,10 +113,19 @@ print np.unique(croppedImages[6])
 
 # croppedImages contains the 81 extracted images for use in MNIST!
 # example
-
+showImage(croppedImages[6])
 # for i in range(81):
 #     showImage(croppedImages[i])
 
 # Constructing the sudoku grid
 grid = [["." for _ in range(9)] for _ in range(9)]
 print len(grid), len(grid[0])
+
+for im in numbered:
+    pos = tuple(((im[0] / 9), (im[0] % 9)))
+    grid[pos[0]][pos[1]] = "n"
+
+for row in grid:
+    for item in row:
+        print item,
+    print ""
