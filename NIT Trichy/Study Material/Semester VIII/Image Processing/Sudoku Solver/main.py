@@ -82,9 +82,10 @@ cropped = crop(original, corners)
 # cropped = crop(proc, corners)
 squares = gridDetect(cropped)
 # print(squares)
-# displayRects(cropped, squares)
+displayRects(cropped, squares)
 
 croppedImages = []
+numbered = list()
 
 print "Displaying 81 images"
 for x in range(0, 81):
@@ -96,8 +97,15 @@ for x in range(0, 81):
     # m_bin = cv2.threshold(blur, 0, 255, cv2.THRESH_BINARY+cv2.THRESH_OTSU)
     croppedImages.append(m_bin)
     unique, counts = np.unique(m_bin, return_counts=True)
-    print "For image " + str(x+1) + " the unique and count is "+ str(unique) + str(counts)
+    print "For image " + str(x + 1) + " the unique and count is " + str(unique) + str(counts)
+    if counts[0] < 190:
+        print "Empty!"
+    else:
+        print "Numbered:"
+        ap = tuple((x, m_bin))
+        numbered.append(ap)
 
+print "There are ", len(numbered), " numbers in the grid"
 print len(croppedImages)
 print type(croppedImages[6])
 print croppedImages[6].shape
@@ -105,7 +113,10 @@ print np.unique(croppedImages[6])
 
 # croppedImages contains the 81 extracted images for use in MNIST!
 # example
-showImage(croppedImages[6])
 
-for i in range(81):
-    showImage(croppedImages[i])
+# for i in range(81):
+#     showImage(croppedImages[i])
+
+# Constructing the sudoku grid
+grid = [["." for _ in range(9)] for _ in range(9)]
+print len(grid), len(grid[0])
