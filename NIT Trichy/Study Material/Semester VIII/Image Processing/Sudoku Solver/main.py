@@ -86,11 +86,17 @@ squares = gridDetect(cropped)
 
 croppedImages = []
 
+print "Displaying 81 images"
 for x in range(0, 81):
     mini_img = cropped[int(squares[x][0][0]):int(squares[x][1][0]), int(squares[x][0][1]):int(squares[x][1][1])]
     m_img = cv2.resize(mini_img, (28, 28), interpolation=cv2.INTER_AREA)
-    m_bin = cv2.adaptiveThreshold(m_img, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
+    blur = cv2.GaussianBlur(m_img, (5, 5), 0)
+    # m_bin = cv2.adaptiveThreshold(m_img, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
+    m_bin = cv2.adaptiveThreshold(blur, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
+    # m_bin = cv2.threshold(blur, 0, 255, cv2.THRESH_BINARY+cv2.THRESH_OTSU)
     croppedImages.append(m_bin)
+    unique, counts = np.unique(m_bin, return_counts=True)
+    print "For image " + str(x+1) + " the unique and count is "+ str(unique) + str(counts)
 
 print len(croppedImages)
 print type(croppedImages[6])
@@ -102,4 +108,4 @@ print np.unique(croppedImages[6])
 showImage(croppedImages[6])
 
 for i in range(81):
-	showImage(croppedImages[i])
+    showImage(croppedImages[i])
