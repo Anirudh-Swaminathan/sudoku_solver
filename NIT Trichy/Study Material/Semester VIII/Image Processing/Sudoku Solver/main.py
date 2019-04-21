@@ -2,6 +2,15 @@ import cv2
 import numpy as np
 import operator
 
+import keras
+from keras.models import load_model
+from keras.models import model_from_json
+from keras.models import Sequential
+from keras.layers import Conv2D, MaxPooling2D, Dense, Dropout, Flatten
+from keras.datasets import mnist
+
+import np_utils
+
 
 def findCorners(img):
     _, contours, h = cv2.findContours(img.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -61,8 +70,25 @@ def gridDetect(img):
 
 def showImage(img):
     cv2.imshow('Grids', img)
-    cv2.waitKey(2000)
+    cv2.waitKey(500)
     cv2.destroyAllWindows()
+
+
+def findNumber(img, mod):
+    """Function to recognize the number from the trained CNN
+
+    @:param img - the small image to classify
+    @:param mod - the model used for classifying the image
+    @:returns - the integer that is detected
+    """
+    X = img.reshape(1, 28, 28, 1).astype('float32')
+    ans = mod.predict(X, verbose=1)
+    out = np.argmax(ans, axis=1)
+    print ans
+    showImage(img)
+    if out == 0:
+        out = int(raw_input("Check the image and input the integer:- "))
+    return out
 
 
 skip_dilate = False
@@ -91,29 +117,43 @@ print "Displaying 81 images"
 for x in range(0, 81):
     mini_img = cropped[int(squares[x][0][0]):int(squares[x][1][0]), int(squares[x][0][1]):int(squares[x][1][1])]
     m_img = cv2.resize(mini_img, (28, 28), interpolation=cv2.INTER_AREA)
+    # m_img = mini_img[10:10+28, 6:6+28]
     blur = cv2.GaussianBlur(m_img, (5, 5), 0)
     # m_bin = cv2.adaptiveThreshold(m_img, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
     m_bin = cv2.adaptiveThreshold(blur, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
+
+    # Whitening the edges
+    m_bin[0:8, :] = 255
+    m_bin[:, 0:8] = 255
+
+    # Invert the binary images
+    m_bin = 255 - m_bin
+
     # m_bin = cv2.threshold(blur, 0, 255, cv2.THRESH_BINARY+cv2.THRESH_OTSU)
     croppedImages.append(m_bin)
+
     unique, counts = np.unique(m_bin, return_counts=True)
     print "For image " + str(x + 1) + " the unique and count is " + str(unique) + str(counts)
-    if counts[0] < 190:
+    if 784 - counts[0] < 65:
         print "Empty!"
+
     else:
-        print "Numbered:"
-        ap = tuple((x, m_bin))
-        numbered.append(ap)
+        if len(counts) == 1 and unique[0] == 255:
+            print "Empty!"
+        else:
+            print "Numbered:"
+            ap = tuple((x, m_bin))
+            numbered.append(ap)
 
 print "There are ", len(numbered), " numbers in the grid"
-print len(croppedImages)
-print type(croppedImages[6])
-print croppedImages[6].shape
-print np.unique(croppedImages[6])
+# print len(croppedImages)
+# print type(croppedImages[6])
+# print croppedImages[6].shape
+# print np.unique(croppedImages[6])
 
 # croppedImages contains the 81 extracted images for use in MNIST!
 # example
-showImage(croppedImages[6])
+# showImage(croppedImages[6])
 # for i in range(81):
 #     showImage(croppedImages[i])
 
@@ -121,9 +161,25 @@ showImage(croppedImages[6])
 grid = [["." for _ in range(9)] for _ in range(9)]
 print len(grid), len(grid[0])
 
+# Load the trained model for real-time classification
+# mods = model_from_json(open('mnist.json').read())
+# mods.load_weights('mnist_weights.h5')
+mods = load_model('mnist.h5')
+(X_train, y_train), (X_test, y_test) = mnist.load_data()
+X_test = X_test.reshape(X_test.shape[0], 28, 28, 1).astype('float32')
+X_test = X_test / 255
+y_test = keras.utils.to_categorical(y_test)
+scores = mods.evaluate(X_test, y_test, verbose=1)
+print scores
+showImage(X_test[0])
+
 for im in numbered:
     pos = tuple(((im[0] / 9), (im[0] % 9)))
-    grid[pos[0]][pos[1]] = "n"
+    img = im[1]
+    num = findNumber(img, mods)
+    # showImage(img)
+    # num = "n"
+    grid[pos[0]][pos[1]] = num
 
 for row in grid:
     for item in row:
