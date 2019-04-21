@@ -315,3 +315,16 @@ tags
 [._]*.un~
 
 # End of https://www.gitignore.io/api/vim,pycharm,pycharm+all,pycharm+iml
+#
+
+# Remove the workspace.xml
+# 
+/.idea/workspace.xml
+
+# Ignore generated .h5 files
+#
+*.h5
+
+# Ignore mnist.json
+# 
+mnist.json
