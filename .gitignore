@@ -323,8 +323,8 @@ tags
 
 # Ignore generated .h5 files
 #
-*.h5
+# *.h5
 
 # Ignore mnist.json
 # 
-mnist.json
+# mnist.json
