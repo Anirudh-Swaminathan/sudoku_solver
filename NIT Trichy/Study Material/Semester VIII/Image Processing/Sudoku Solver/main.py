@@ -93,7 +93,7 @@ def findNumber(img, mod):
 
 skip_dilate = False
 
-original = cv2.imread("Sudoku.jpg", cv2.IMREAD_GRAYSCALE)
+original = cv2.imread("Sudoku2.jpg", cv2.IMREAD_GRAYSCALE)
 
 proc = cv2.GaussianBlur(original.copy(), (9, 9), 0)
 proc = cv2.adaptiveThreshold(proc, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
@@ -134,7 +134,7 @@ for x in range(0, 81):
 
     unique, counts = np.unique(m_bin, return_counts=True)
     print "For image " + str(x + 1) + " the unique and count is " + str(unique) + str(counts)
-    if 784 - counts[0] < 65:
+    if 784 - counts[0] < 77:
         print "Empty!"
 
     else:
