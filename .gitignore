@@ -329,5 +329,8 @@ tags
 # 
 # mnist.json
 
+# Ignore digit basic dataset
+digit-basic
+
 # Ignore jittam_env
 jittam_env
