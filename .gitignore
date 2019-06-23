@@ -328,3 +328,6 @@ tags
 # Ignore mnist.json
 # 
 # mnist.json
+
+# Ignore jittam_env
+jittam_env
